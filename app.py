@@ -24,3 +24,21 @@ PAGINA_LOGIN = """
 """
 
 @app.route("/", methods=["GET", "POST"])
+def login():
+    erro = ""
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        senha = request.form["senha"]
+        con = sqlite3.connect("banco.db")
+        # VULNERÁVEL: query montada concatenando texto do usuário
+        query = "SELECT * FROM usuarios WHERE usuario = '" + usuario + "' AND senha = '" + senha + "'"
+        print("Query executada:", query)
+        resultado = con.execute(query).fetchone()
+        con.close()
+        if resultado:
+            session["usuario"] = resultado[1]
+            return redirect("/painel")
+        erro = "Usuário ou senha inválidos"
+    return render_template_string(PAGINA_LOGIN, erro=erro)
+
+@app.route("/painel")
