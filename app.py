@@ -76,6 +76,19 @@ def painel():
     </form>
     <a href="/sair">Sair</a>
     """
+
+
+@app.route("/busca")
+def busca():
+    if "usuario_id" not in session:
+        return redirect("/")
+    q = request.args.get("q", "")
+    con = db()
+    notas = con.execute("SELECT * FROM notas WHERE usuario_id = ? AND texto LIKE ?",
+                        (session["usuario_id"], f"%{q}%")).fetchall()
+    con.close()
+    itens = "".join(f"<li>{n['texto']}</li>" for n in notas)
+    
 @app.route("/sair")
 def sair():
     session.clear()
