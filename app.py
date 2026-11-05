@@ -62,7 +62,20 @@ def painel():
     notas = con.execute("SELECT * FROM notas WHERE usuario_id = ?",
                         (session["usuario_id"],)).fetchall()
     con.close()
-
+    # VULNERÁVEL: stored XSS (texto da nota mostrado sem tratamento)
+    itens = "".join(f"<li><a href='/nota/{n['id']}'>nota #{n['id']}</a>: {n['texto']}</li>" for n in notas)
+    return f"""
+    <h2>Bem-vindo, {session['usuario']}!</h2>
+    <form method="get" action="/busca">
+      <input name="q" placeholder="buscar nota"><button>Buscar</button>
+    </form>
+    <h3>Suas notas</h3>
+    <ul>{itens}</ul>
+    <form method="post">
+      <input name="texto" placeholder="nova nota"><button>Adicionar</button>
+    </form>
+    <a href="/sair">Sair</a>
+    """
 @app.route("/sair")
 def sair():
     session.clear()
