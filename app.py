@@ -88,7 +88,15 @@ def busca():
                         (session["usuario_id"], f"%{q}%")).fetchall()
     con.close()
     itens = "".join(f"<li>{n['texto']}</li>" for n in notas)
-    
+    # VULNERÁVEL: reflected XSS (o termo é devolvido sem tratamento)
+    return f"""
+    <h2>Resultados</h2>
+    <p>Você buscou por: {q}</p>
+    <ul>{itens}</ul>
+    <a href="/painel">Voltar</a>
+    """
+
+
 @app.route("/sair")
 def sair():
     session.clear()
