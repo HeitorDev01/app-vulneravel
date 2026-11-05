@@ -2,7 +2,12 @@ from flask import Flask, request, session, redirect, render_template_string
 import sqlite3
 
 app = Flask(__name__)
-app.secret_key = "chave-insegura-123"   # fraco de propósito
+app.secret_key = "chave-insegura-123"
+
+def db():
+    con = sqlite3.connect("banco.db")
+    con.row_factory = sqlite3.Row
+    return con   # fraco de propósito
 
 def init_db():
     con = sqlite3.connect("banco.db")
