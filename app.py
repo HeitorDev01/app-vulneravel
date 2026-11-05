@@ -50,11 +50,18 @@ def login():
         erro = "Usuário ou senha inválidos"
     return render_template_string(PAGINA_LOGIN, erro=erro)
 
-@app.route("/painel")
+@app.route("/painel", methods=["GET", "POST"])
 def painel():
-    if "usuario" not in session:
+    if "usuario_id" not in session:
         return redirect("/")
-    return f"<h2>Bem-vindo, {session['usuario']}!</h2><a href='/sair'>Sair</a>"
+    con = db()
+    if request.method == "POST":
+        con.execute("INSERT INTO notas (usuario_id, texto) VALUES (?, ?)",
+                    (session["usuario_id"], request.form["texto"]))
+        con.commit()
+    notas = con.execute("SELECT * FROM notas WHERE usuario_id = ?",
+                        (session["usuario_id"],)).fetchall()
+    con.close()
 
 @app.route("/sair")
 def sair():
