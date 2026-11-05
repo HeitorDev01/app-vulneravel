@@ -42,3 +42,9 @@ def login():
     return render_template_string(PAGINA_LOGIN, erro=erro)
 
 @app.route("/painel")
+def painel():
+    if "usuario" not in session:
+        return redirect("/")
+    return f"<h2>Bem-vindo, {session['usuario']}!</h2><a href='/sair'>Sair</a>"
+
+@app.route("/sair")
