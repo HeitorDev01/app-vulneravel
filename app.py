@@ -48,3 +48,10 @@ def painel():
     return f"<h2>Bem-vindo, {session['usuario']}!</h2><a href='/sair'>Sair</a>"
 
 @app.route("/sair")
+def sair():
+    session.clear()
+    return redirect("/")
+
+if __name__ == "__main__":
+    init_db()
+    app.run(debug=True, port=5000)
