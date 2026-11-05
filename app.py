@@ -96,11 +96,11 @@ def busca():
     <a href="/painel">Voltar</a>
     """
 
-
-@app.route("/sair")
-def sair():
-    session.clear()
-    return redirect("/")
+@app.route("/nota/<int:nota_id>")
+def nota(nota_id):
+    if "usuario_id" not in session:
+        return redirect("/")
+    con = db()
 
 if __name__ == "__main__":
     init_db()
