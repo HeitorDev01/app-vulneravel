@@ -10,11 +10,14 @@ def db():
     return con   # fraco de propósito
 
 def init_db():
-    con = sqlite3.connect("banco.db")
+    con = db()
     con.execute("CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY, usuario TEXT, senha TEXT)")
+    con.execute("CREATE TABLE IF NOT EXISTS notas (id INTEGER PRIMARY KEY, usuario_id INTEGER, texto TEXT)")
     if con.execute("SELECT COUNT(*) FROM usuarios").fetchone()[0] == 0:
         con.execute("INSERT INTO usuarios (usuario, senha) VALUES ('heitor', 'senha123')")
         con.execute("INSERT INTO usuarios (usuario, senha) VALUES ('admin', 'sup3rs3cr3t')")
+        con.execute("INSERT INTO notas (usuario_id, texto) VALUES (1, 'Comprar resistores')")
+        con.execute("INSERT INTO notas (usuario_id, texto) VALUES (2, 'Senha do servidor: root/root')")
         con.commit()
     con.close()
 
