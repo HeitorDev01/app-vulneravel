@@ -78,3 +78,22 @@ def buscar():
     <ul>{itens}</ul>
     <a href="/painel">Voltar</a>
     """
+
+@app.route("/funcionario/<int:fid>")
+def funcionario(fid):
+    if "id" not in session: return redirect("/")
+    con = db(); cur = con.cursor(dictionary=True)
+    # VULNERÁVEL: IDOR (mostra qualquer ficha, sem checar permissão)
+    cur.execute("SELECT * FROM funcionarios WHERE id = %s", (fid,))
+    f = cur.fetchone(); con.close()
+    if not f: return "Não encontrado"
+    return f"""
+    <h2>Ficha de {f['nome']}</h2>
+    <ul>
+      <li>Cargo: {f['cargo']}</li>
+      <li>Salário: R$ {f['salario']}</li>
+      <li>CPF: {f['cpf']}</li>
+      <li>E-mail: {f['email']}</li>
+    </ul>
+    <a href="/painel">Voltar</a>
+    """
