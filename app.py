@@ -101,7 +101,12 @@ def nota(nota_id):
     if "usuario_id" not in session:
         return redirect("/")
     con = db()
-
+    # VULNERÁVEL: IDOR (busca pelo id SEM conferir o dono)
+    n = con.execute("SELECT * FROM notas WHERE id = ?", (nota_id,)).fetchone()
+    con.close()
+    if not n:
+        return "Nota não encontrada"
+    return f"<h2>Nota #{n['id']}</h2><p>{n['texto']}</p><a href='/painel'>Voltar</a>"
 if __name__ == "__main__":
     init_db()
     app.run(debug=True, port=5000)
