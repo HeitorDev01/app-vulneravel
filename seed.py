@@ -1,5 +1,5 @@
+from flask import Flask, request, session, redirect, render_template_string
 import mysql.connector, hashlib
-from faker import Faker
 
 fake = Faker("pt_BR")
 con = mysql.connector.connect(host="localhost", user="portal", password="portal123", database="portal")
