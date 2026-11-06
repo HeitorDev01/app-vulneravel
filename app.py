@@ -4,7 +4,9 @@ from markupsafe import escape
 import mysql.connector, bcrypt
 
 app = Flask(__name__)
-app.secret_key = "chave-insegura-123"
+# CORRIGIDO: secret_key forte, vinda de variável de ambiente (nunca hardcoded).
+# Em lab, se não houver a variável, gera uma aleatória por execução.
+app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
 
 def db():
     return mysql.connector.connect(host="localhost", user="portal",
