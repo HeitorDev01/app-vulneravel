@@ -11,6 +11,40 @@ app.secret_key = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
 def db():
     return mysql.connector.connect(host="localhost", user="portal",
                                    password="portal123", database="portal")
+ 
+def pagina(titulo, conteudo, logado=True):
+    topo = '<a href="/sair" class="sair">Sair</a>' if logado else ''
+    return f"""
+<!doctype html><html lang="pt-br"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{titulo} — Portal do Colaborador</title>
+<style>
+  *{{box-sizing:border-box;margin:0;padding:0}}
+  body{{font-family:'Segoe UI',Arial,sans-serif;background:#eef1f5;color:#1f2a37}}
+  header{{background:#13315c;color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:center}}
+  header h1{{font-size:18px;font-weight:600}}
+  header .sair{{color:#cdd9ec;text-decoration:none;font-size:14px}}
+  .container{{max-width:720px;margin:32px auto;padding:0 16px}}
+  .card{{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,.06)}}
+  .card h2{{font-size:16px;margin-bottom:16px;color:#13315c}}
+  label{{display:block;font-size:13px;color:#475569;margin-bottom:4px}}
+  input{{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;margin-bottom:14px}}
+  button{{background:#13315c;color:#fff;border:0;padding:10px 18px;border-radius:8px;font-size:14px;cursor:pointer}}
+  button:hover{{background:#1d4e89}}
+  table{{width:100%;border-collapse:collapse}}
+  td{{padding:8px 0;border-bottom:1px solid #eef1f5;font-size:14px}}
+  td.rot{{color:#64748b;width:130px}}
+  ul.lista{{list-style:none}}
+  ul.lista li{{padding:10px 0;border-bottom:1px solid #eef1f5;font-size:14px}}
+  a{{color:#1d4e89}}
+  .erro{{color:#b91c1c;font-size:14px;margin-top:8px}}
+  .restrito{{color:#94a3b8;font-style:italic}}
+</style></head><body>
+<header><h1>🏢 Empresa XYZ — Portal do Colaborador</h1>{topo}</header>
+<div class="container">{conteudo}</div>
+</body></html>
+"""
+ 
 
 def md5(s): return hashlib.md5(s.encode()).hexdigest()
 
