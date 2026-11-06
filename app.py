@@ -143,18 +143,21 @@ def buscar():
     con = db(); cur = con.cursor(dictionary=True)
     cur.execute("SELECT id, nome, cargo FROM funcionarios WHERE nome LIKE %s", (f"%{q}%",))
     rows = cur.fetchall(); con.close()
-    itens = "".join(f"<li><a href='/funcionario/{r['id']}'>{r['nome']}</a> — {r['cargo']}</li>" for r in rows)
-    # VULNERÁVEL: reflected XSS (q sem tratamento)
+    # CORRIGIDO (XSS): escape() em tudo que vai pro HTML — o que o usuário
+    # digitou (q) e também os dados vindos do banco. Tags viram texto inofensivo.
+    itens = "".join(
+        f"<li><a href='/funcionario/{r['id']}'>{escape(r['nome'])}</a> — {escape(r['cargo'])}</li>"
+        for r in rows
+    )
     conteudo = f"""
     <div class="card">
       <h2>Resultados da busca</h2>
-      <p style="color:#475569;font-size:14px;margin-bottom:12px">Você buscou por: {q}</p>
+      <p style="color:#475569;font-size:14px;margin-bottom:12px">Você buscou por: {escape(q)}</p>
       <ul class="lista">{itens}</ul>
       <p style="margin-top:12px"><a href="/painel">← Voltar</a></p>
     </div>"""
     return pagina("Busca", conteudo)
-
-@app.route("/funcionario/<int:fid>")
+ 
 def funcionario(fid):
     if "id" not in session: return redirect("/")
     con = db(); cur = con.cursor(dictionary=True)
