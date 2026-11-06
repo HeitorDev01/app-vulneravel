@@ -62,3 +62,19 @@ def painel():
     <p>Ver ficha por ID: <a href="/funcionario/2">/funcionario/2</a></p>
     <a href="/sair">Sair</a>
     """
+
+@app.route("/buscar")
+def buscar():
+    if "id" not in session: return redirect("/")
+    q = request.args.get("q", "")
+    con = db(); cur = con.cursor(dictionary=True)
+    cur.execute("SELECT id, nome, cargo FROM funcionarios WHERE nome LIKE %s", (f"%{q}%",))
+    rows = cur.fetchall(); con.close()
+    itens = "".join(f"<li><a href='/funcionario/{r['id']}'>{r['nome']}</a> — {r['cargo']}</li>" for r in rows)
+    # VULNERÁVEL: reflected XSS (q sem tratamento)
+    return f"""
+    <h2>Resultados</h2>
+    <p>Você buscou por: {q}</p>
+    <ul>{itens}</ul>
+    <a href="/painel">Voltar</a>
+    """
