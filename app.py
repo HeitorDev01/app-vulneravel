@@ -1,5 +1,7 @@
-from flask import Flask, request, session, redirect, render_template_string
-import mysql.connector, hashlib
+import os, secrets
+from flask import Flask, request, session, redirect
+from markupsafe import escape
+import mysql.connector, bcrypt
 
 app = Flask(__name__)
 app.secret_key = "chave-insegura-123"
