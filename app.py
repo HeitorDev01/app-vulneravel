@@ -157,6 +157,15 @@ def buscar():
       <p style="margin-top:12px"><a href="/painel">← Voltar</a></p>
     </div>"""
     return pagina("Busca", conteudo)
+
+def pode_ver_dados_sensiveis(fid):
+    # Dono vê a própria ficha completa; RH e Admin podem ver de todos.
+    if fid == session.get("id"):
+        return True
+    cargo = session.get("cargo", "")
+    return cargo.startswith("RH") or "Admin" in cargo
+ 
+@app.route("/funcionario/<int:fid>")
  
 def funcionario(fid):
     if "id" not in session: return redirect("/")
