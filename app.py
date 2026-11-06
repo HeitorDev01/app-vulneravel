@@ -120,11 +120,11 @@ def painel():
     <div class="card">
       <h2>Meus dados</h2>
       <table>
-        <tr><td class="rot">Nome</td><td>{eu['nome']}</td></tr>
-        <tr><td class="rot">Cargo</td><td>{eu['cargo']}</td></tr>
+        <tr><td class="rot">Nome</td><td>{escape(eu['nome'])}</td></tr>
+        <tr><td class="rot">Cargo</td><td>{escape(eu['cargo'])}</td></tr>
         <tr><td class="rot">Salário</td><td>R$ {eu['salario']}</td></tr>
-        <tr><td class="rot">CPF</td><td>{eu['cpf']}</td></tr>
-        <tr><td class="rot">E-mail</td><td>{eu['email']}</td></tr>
+        <tr><td class="rot">CPF</td><td>{escape(eu['cpf'])}</td></tr>
+        <tr><td class="rot">E-mail</td><td>{escape(eu['email'])}</td></tr>
       </table>
     </div>
     <div class="card">
@@ -134,8 +134,8 @@ def painel():
         <button>Buscar</button>
       </form>
     </div>"""
-    return pagina(f"Olá, {eu['nome']}", conteudo)
-
+    return pagina(f"Olá, {escape(eu['nome'])}", conteudo)
+ 
 @app.route("/buscar")
 def buscar():
     if "id" not in session: return redirect("/")
