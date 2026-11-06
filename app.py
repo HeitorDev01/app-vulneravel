@@ -166,26 +166,34 @@ def pode_ver_dados_sensiveis(fid):
     return cargo.startswith("RH") or "Admin" in cargo
  
 @app.route("/funcionario/<int:fid>")
- 
 def funcionario(fid):
     if "id" not in session: return redirect("/")
     con = db(); cur = con.cursor(dictionary=True)
-    # VULNERÁVEL: IDOR (mostra qualquer ficha, sem checar o dono)
     cur.execute("SELECT * FROM funcionarios WHERE id = %s", (fid,))
     f = cur.fetchone(); con.close()
-    if not f: return pagina("Não encontrado", '<div class="card">Funcionário não encontrado. <a href="/painel">Voltar</a></div>')
+    if not f:
+        return pagina("Não encontrado", '<div class="card">Funcionário não encontrado. <a href="/painel">Voltar</a></div>')
+    # CORRIGIDO (IDOR): autorização por objeto. Salário e CPF só aparecem
+    # para o dono da ficha ou para quem tem papel autorizado (RH/Admin).
+    completo = pode_ver_dados_sensiveis(fid)
+    linhas = f"""
+        <tr><td class="rot">Cargo</td><td>{escape(f['cargo'])}</td></tr>
+        <tr><td class="rot">E-mail</td><td>{escape(f['email'])}</td></tr>"""
+    if completo:
+        linhas += f"""
+        <tr><td class="rot">Salário</td><td>R$ {f['salario']}</td></tr>
+        <tr><td class="rot">CPF</td><td>{escape(f['cpf'])}</td></tr>"""
+    else:
+        linhas += """
+        <tr><td class="rot">Salário</td><td class="restrito">— restrito</td></tr>
+        <tr><td class="rot">CPF</td><td class="restrito">— restrito</td></tr>"""
     conteudo = f"""
     <div class="card">
-      <h2>Ficha de {f['nome']}</h2>
-      <table>
-        <tr><td class="rot">Cargo</td><td>{f['cargo']}</td></tr>
-        <tr><td class="rot">Salário</td><td>R$ {f['salario']}</td></tr>
-        <tr><td class="rot">CPF</td><td>{f['cpf']}</td></tr>
-        <tr><td class="rot">E-mail</td><td>{f['email']}</td></tr>
-      </table>
+      <h2>Ficha de {escape(f['nome'])}</h2>
+      <table>{linhas}</table>
       <p style="margin-top:12px"><a href="/painel">← Voltar</a></p>
     </div>"""
-    return pagina(f"Ficha de {f['nome']}", conteudo)
+    return pagina(f"Ficha de {escape(f['nome'])}", conteudo)
 
 @app.route("/sair")
 def sair():
