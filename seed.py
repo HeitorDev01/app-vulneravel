@@ -22,3 +22,20 @@ PAGINA_LOGIN = """
 """
 
 @app.route("/", methods=["GET", "POST"])
+def login():
+    erro = ""
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        senha = request.form["senha"]
+        con = db(); cur = con.cursor(dictionary=True)
+        # VULNERÁVEL: SQL injection (usuário concatenado)
+        query = "SELECT * FROM funcionarios WHERE usuario = '" + usuario + "' AND senha_md5 = '" + md5(senha) + "'"
+        print("Query:", query)
+        cur.execute(query)
+        f = cur.fetchone()
+        con.close()
+        if f:
+            session["id"] = f["id"]; session["nome"] = f["nome"]
+            return redirect("/painel")
+        erro = "Usuário ou senha inválidos"
+    return render_template_string(PAGINA_LOGIN, erro=erro)
