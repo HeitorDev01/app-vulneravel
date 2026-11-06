@@ -16,19 +16,14 @@ CREATE TABLE funcionarios (
 )
 """)
 
-def md5(s): return hashlib.md5(s.encode()).hexdigest()
-
+# CORRIGIDO: bcrypt com salt em vez de MD5. Cada hash é único mesmo p/ senhas iguais.
+def hash_senha(s):
+    return bcrypt.hashpw(s.encode(), bcrypt.gensalt()).decode()
+ 
 # admin
-cur.execute("INSERT INTO funcionarios (nome,email,cargo,salario,cpf,usuario,senha_md5) VALUES (%s,%s,%s,%s,%s,%s,%s)",
-    ("Administrador", "admin@empresa.com", "TI - Admin", 15000, "000.000.000-00", "admin", md5("admin123")))
-
-# 20 funcionarios ficticios
-for _ in range(20):
-    nome = fake.name()
-    usuario = nome.split()[0].lower() + str(fake.random_int(1, 99))
-    cur.execute("INSERT INTO funcionarios (nome,email,cargo,salario,cpf,usuario,senha_md5) VALUES (%s,%s,%s,%s,%s,%s,%s)",
-        (nome, fake.email(), fake.job(), fake.random_int(2000, 12000), fake.cpf(), usuario, md5("senha123")))
-
-con.commit()
-con.close()
-print("Banco populado!")
+cur.execute("INSERT INTO funcionarios (nome,email,cargo,salario,cpf,usuario,senha_hash) VALUES (%s,%s,%s,%s,%s,%s,%s)",
+    ("Administrador", "admin@empresa.com", "TI - Admin", 15000, "000.000.000-00", "admin", hash_senha("admin123")))
+ 
+# Maria Souza, do RH (papel que enxerga ficha de todos — usado no cenário do README)
+cur.execute("INSERT INTO funcionarios (nome,email,cargo,salario,cpf,usuario,senha_hash) VALUES (%s,%s,%s,%s,%s,%s,%s)",
+    ("Maria Souza", "maria.souza@empresa.com", "RH - Gerente", 11000, fake.cpf(), "maria", hash_senha("senha123")))
