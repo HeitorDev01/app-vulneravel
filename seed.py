@@ -14,3 +14,5 @@ CREATE TABLE funcionarios (
   usuario VARCHAR(50), senha_md5 VARCHAR(32)
 )
 """)
+
+def md5(s): return hashlib.md5(s.encode()).hexdigest()
