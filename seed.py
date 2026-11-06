@@ -27,3 +27,14 @@ cur.execute("INSERT INTO funcionarios (nome,email,cargo,salario,cpf,usuario,senh
 # Maria Souza, do RH (papel que enxerga ficha de todos — usado no cenário do README)
 cur.execute("INSERT INTO funcionarios (nome,email,cargo,salario,cpf,usuario,senha_hash) VALUES (%s,%s,%s,%s,%s,%s,%s)",
     ("Maria Souza", "maria.souza@empresa.com", "RH - Gerente", 11000, fake.cpf(), "maria", hash_senha("senha123")))
+
+# 20 funcionarios ficticios
+for _ in range(20):
+    nome = fake.name()
+    usuario = nome.split()[0].lower() + str(fake.random_int(1, 99))
+    cur.execute("INSERT INTO funcionarios (nome,email,cargo,salario,cpf,usuario,senha_hash) VALUES (%s,%s,%s,%s,%s,%s,%s)",
+        (nome, fake.email(), fake.job(), fake.random_int(2000, 12000), fake.cpf(), usuario, hash_senha("senha123")))
+ 
+con.commit()
+con.close()
+print("Banco populado (versão corrigida, bcrypt)!")
