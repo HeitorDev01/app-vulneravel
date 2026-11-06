@@ -112,3 +112,7 @@ def nota(nota_id):
 def sair():
         session.clear()
         return redirect("/")
+
+if __name__ == "__main__":
+    init_db()
+    app.run(debug=True, port=5000)
