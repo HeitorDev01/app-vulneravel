@@ -87,12 +87,15 @@ def login():
         usuario = request.form["usuario"]
         senha = request.form["senha"]
         con = db(); cur = con.cursor(dictionary=True)
-        # VULNERÁVEL: SQL injection (usuário concatenado)
-        query = "SELECT * FROM funcionarios WHERE usuario = '" + usuario + "' AND senha_md5 = '" + md5(senha) + "'"
-        print("Query:", query)
-        cur.execute(query); f = cur.fetchone(); con.close()
-        if f:
-            session["id"] = f["id"]; session["nome"] = f["nome"]
+        # CORRIGIDO (SQLi): query parametrizada. A entrada vai como DADO (%s),
+        # nunca concatenada no texto do SQL, então ' OR '1'='1 deixa de funcionar.
+        cur.execute("SELECT * FROM funcionarios WHERE usuario = %s", (usuario,))
+        f = cur.fetchone(); con.close()
+        # CORRIGIDO (hash fraco): verificação com bcrypt em vez de comparar MD5.
+        if f and bcrypt.checkpw(senha.encode(), f["senha_hash"].encode()):
+            session["id"] = f["id"]
+            session["nome"] = f["nome"]
+            session["cargo"] = f["cargo"]   # guardado p/ decidir autorização depois
             return redirect("/painel")
         erro = "Usuário ou senha inválidos"
     conteudo = f"""
@@ -106,7 +109,7 @@ def login():
       <div class="erro">{erro}</div>
     </div>"""
     return pagina("Login", conteudo, logado=False)
-
+ 
 @app.route("/painel")
 def painel():
     if "id" not in session: return redirect("/")
