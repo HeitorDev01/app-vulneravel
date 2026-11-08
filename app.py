@@ -164,7 +164,7 @@ def funcionario(fid):
 def sair():
     session.clear(); return redirect("/")
 
-if __name__ == "__main__"
+if __name__ == "__main__":
 
     # CORRIGIDO: debug desligado — debug=True expõe o console interativo do Werkzeug.
     app.run(debug=False, host="127.0.0.1", port=5000)
