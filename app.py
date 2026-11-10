@@ -167,4 +167,4 @@ def sair():
 if __name__ == "__main__": 
 
     # CORRIGIDO: debug desligado — debug=True expõe o console interativo do Werkzeug.
-    app.run(debug=False, host="", port=5000)
+    app.run(debug=False, host="0.0.0.0", port=5000)
